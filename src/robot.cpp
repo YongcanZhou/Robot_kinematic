@@ -17,11 +17,6 @@ namespace zyc::kinematic {
     struct Move::Imp : public MoveParam {};
     char eu_type[4]{'3', '2', '1', '\0'};
 
-//    auto Move::prepareNrt() -> void {
-//        std::cout<<"test";
-//        return ;
-//    }
-
     //forward kinematic calculation
     auto Move::forward_kinematic() -> int {
         auto &mout = master()->mout();
@@ -39,9 +34,11 @@ namespace zyc::kinematic {
             return -1;
         }else{
             //screw_tool_center_point
-            double s_tcp[6]{0,0,0,0,0,0};
-            ee.getP(s_tcp);
-            mout<<"screw_tool_center_point_position: "<<s_tcp[0]<<" "<<s_tcp[1]<<" "<<s_tcp[2]<<" "<<s_tcp[3]<<" "<<s_tcp[4]<<" "<<s_tcp[5]<<std::endl;
+            double joint_angle[6]{0,0,0,0,0,0};
+            ee.getP(joint_angle);
+//            ee.get
+            std::cout<<"joint_angle:"<<joint_angle[0]<<" "<<joint_angle[1]<<" "<<joint_angle[2]<<" "<<joint_angle[3]<<" "<<joint_angle[4]<<" "<<joint_angle[5]<<std::endl;
+//            mout<<"screw_tool_center_point_position:"<<joint_angle[0]<<" "<<joint_angle[1]<<" "<<joint_angle[2]<<" "<<joint_angle[3]<<" "<<joint_angle[4]<<" "<<joint_angle[5]<<std::endl;
         }
     }
 
@@ -57,19 +54,22 @@ namespace zyc::kinematic {
 
         ee.setP(s_tcp);
         model()->solverPool()[0].kinPos();//0逆解  1正解
-        double joint[6];
+        double joint[6],link_test[6][6];
         static double link[6][6];
         for(std::size_t i = 0; i<motor_num; i++)
         {
-            model()->motionPool()[i].updP();
+            model()->motionPool()[i].updP();//??
             joint[i] = model()->motionPool()[i].mp();
-            model()->motionPool()[i].getP(link[i]);//get link position
-            mout<<"link"<<i+1<<": "<<link[i][0]<<" "<<link[i][1]<<" "<<link[i][2]<<" "<<link[i][3]<<" "<<link[i][4]<<" "<<link[i][5]<<" "<<std::endl;
+//            model()->motionPool()[i].getP(link[i]);//get link position?
+            std::cout<<"link?"<<model()->partPool().at(i).pm()<<std::endl;
+//            std::cout<<"link"<<i+1<<": "<<link[i][0]<<" "<<link[i][1]<<" "<<link[i][2]<<" "<<link[i][3]<<" "<<link[i][4]<<" "<<link[i][5]<<" "<<std::endl;
+//            mout<<"link"<<i+1<<": "<<link[i][0]<<" "<<link[i][1]<<" "<<link[i][2]<<" "<<link[i][3]<<" "<<link[i][4]<<" "<<link[i][5]<<" "<<std::endl;
              /*model()->motorPool()[i].setTargetPos();// motor position
              model()->partPool().at(2).pm();//link position
              controller()->motionPool()[i].setTargetPos(x_joint[i]);*/
         }
-        mout<<"joint_angle: "<<joint[0]<<" "<<joint[1]<<" "<<joint[2]<<" "<<joint[3]<<" "<<joint[4]<<" "<<joint[5]<<std::endl;
+        std::cout<<"joint_angle: "<<joint[0]<<" "<<joint[1]<<" "<<joint[2]<<" "<<joint[3]<<" "<<joint[4]<<" "<<joint[5]<<std::endl;
+//        mout<<"joint_angle: "<<joint[0]<<" "<<joint[1]<<" "<<joint[2]<<" "<<joint[3]<<" "<<joint[4]<<" "<<joint[5]<<std::endl;
     }
 
     Move::~Move()=default;
