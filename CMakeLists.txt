@@ -20,14 +20,14 @@ endif(WIN32)
 
 include_directories(${aris_INCLUDE_DIRS})
 
-file(GLOB HEADERS
-        src/*.h
-        )
+#file(GLOB HEADERS
+#        src/*.h
+#        )
 file(GLOB SOURCES
         src/*.cpp
         )
 
-add_executable(Robot_kinematic ${SOURCES} ${HEADERS})
+add_executable(Robot_kinematic ${SOURCES} #[[${HEADERS}]])
 
 if(UNIX)
     target_link_libraries(Robot_kinematic ${aris_LIBRARIES} atomic)
